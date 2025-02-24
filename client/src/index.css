@@ -72,8 +72,8 @@ button:focus-visible {
 @theme {
   --color-*: initial;
   --color-white: #fff;
-  --color-custom-black: #322625;
-  --color-custom-grey: #ebebeb;
-  --color-custom-blue: #c0e3e5;
-  --color-custom-yellow: #fdc936;
+  --color-primary: #c0e3e5;
+  --color-success: #c0e3e5;
+  --color-success: #c0e3e5;
+  --color-warning: #fdc936;
 }

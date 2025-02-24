@@ -53,10 +53,16 @@ const gameSlice = createSlice({
     setGameStatus: (state, action: PayloadAction<GameState["gameStatus"]>) => {
       state.gameStatus = action.payload;
     },
+
+    clearBoard: (state) => {
+      state.board = [];
+      state.gameStatus = "idle";
+      state.boardSize = { rows: 3, cols: 3 };
+    },
   },
 });
 
-export const { initializeBoard, setGameStatus } = gameSlice.actions;
+export const { initializeBoard, setGameStatus, clearBoard } = gameSlice.actions;
 
 export default gameSlice.reducer;
 
