@@ -1,19 +1,19 @@
 import { useAppSelector } from "../store/hooks";
 import { selectGameStatus } from "../store/gameSlice";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { GameStatus } from "../components/GameStatus";
 import { GameBoard } from "../components/GameBoard";
 
 export function Game() {
-  const navigate = useNavigate();
   const gameStatus = useAppSelector(selectGameStatus);
 
+  console.log(gameStatus);
   if (gameStatus === "idle") {
-    navigate("/");
+    return <Navigate to="/" />;
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-row gap-2 justify-center h-screen">
       <GameStatus />
       <GameBoard />
     </div>
