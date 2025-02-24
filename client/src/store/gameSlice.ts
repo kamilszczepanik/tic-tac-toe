@@ -25,6 +25,7 @@ export interface GameState {
     }[];
     currentIndex: number;
   };
+  isReplaying: boolean;
 }
 
 const initialState: GameState = {
@@ -41,6 +42,7 @@ const initialState: GameState = {
     states: [],
     currentIndex: -1,
   },
+  isReplaying: false,
 };
 
 type GameStateHistory = {
@@ -165,11 +167,47 @@ const gameSlice = createSlice({
         state.winner = nextState.winner;
       }
     },
+
+    startReplay: (state) => {
+      state.isReplaying = true;
+      state.board = Array(state.boardSize.rows)
+        .fill(null)
+        .map(() =>
+          Array(state.boardSize.cols)
+            .fill(null)
+            .map(() => ({ value: null }))
+        );
+      state.currentPlayer = "X";
+    },
+
+    stopReplay: (state) => {
+      state.isReplaying = false;
+      const lastState = state.history.states[state.history.currentIndex];
+      state.board = JSON.parse(JSON.stringify(lastState.board));
+      state.currentPlayer = lastState.currentPlayer;
+    },
+
+    setReplayMove: (state, action: PayloadAction<GameStateHistory>) => {
+      const nextState = action.payload;
+      state.board = JSON.parse(JSON.stringify(nextState.board));
+      state.currentPlayer = nextState.currentPlayer;
+      state.gameStatus = nextState.gameStatus;
+      state.winner = nextState.winner;
+    },
   },
 });
 
-export const { initializeBoard, setGameStatus, clearBoard, play, undo, redo } =
-  gameSlice.actions;
+export const {
+  initializeBoard,
+  setGameStatus,
+  clearBoard,
+  play,
+  undo,
+  redo,
+  startReplay,
+  stopReplay,
+  setReplayMove,
+} = gameSlice.actions;
 
 export default gameSlice.reducer;
 
@@ -183,3 +221,5 @@ export const selectCanUndo = (state: RootState) =>
   state.game.history.currentIndex > 0;
 export const selectCanRedo = (state: RootState) =>
   state.game.history.currentIndex < state.game.history.states.length - 1;
+export const selectIsReplaying = (state: RootState) => state.game.isReplaying;
+export const selectHistory = (state: RootState) => state.game.history;

@@ -4,6 +4,7 @@ import {
   selectBoardSize,
   selectGameStatus,
   play,
+  selectIsReplaying,
 } from "../store/gameSlice";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
@@ -13,11 +14,13 @@ export const GameBoard = () => {
   const board = useAppSelector(selectBoard);
   const boardSize = useAppSelector(selectBoardSize);
   const gameStatus = useAppSelector(selectGameStatus);
+  const isReplaying = useAppSelector(selectIsReplaying);
   const [lastMove, setLastMove] = useState<{ row: number; col: number } | null>(
     null
   );
 
   const handleCellClick = (row: number, col: number) => {
+    if (isReplaying) return;
     dispatch(play({ row, col }));
     setLastMove({ row, col });
   };
@@ -51,7 +54,9 @@ export const GameBoard = () => {
                   : ""
               }`}
               onClick={() => handleCellClick(rowIndex, colIndex)}
-              disabled={cell.value !== null || gameStatus === "finished"}
+              disabled={
+                cell.value !== null || gameStatus === "finished" || isReplaying
+              }
             >
               {cell.value}
             </Button>
