@@ -18,21 +18,22 @@ export const GameBoard = () => {
   };
 
   return (
-    <div>
+    <div className="flex justify-center">
       <div
-        className="grid gap-2"
+        className="grid gap-2 p-6 bg-white rounded-lg shadow-md"
         style={{
           gridTemplateColumns: `repeat(${boardSize.cols}, minmax(0, 1fr))`,
+          width: `min(100%, ${boardSize.cols * 80}px)`,
         }}
       >
         {board.map((row, rowIndex) =>
           row.map((cell, colIndex) => (
             <Button
-              variant={"outline"}
+              variant="outline"
               key={`${rowIndex}-${colIndex}`}
-              className="w-16 h-16 text-2xl font-bold"
+              className="aspect-square w-full text-2xl font-bold"
               onClick={() => handleCellClick(rowIndex, colIndex)}
-              disabled={cell.value !== null || gameStatus === "won"}
+              disabled={cell.value !== null || gameStatus === "finished"}
             >
               {cell.value}
             </Button>

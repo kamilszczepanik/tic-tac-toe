@@ -31,3 +31,7 @@ export const checkWinner = (board: Cell[][]): "O" | "X" | null => {
 
   return null;
 };
+
+export const everyCellFilled = (board: Cell[][]): boolean => {
+  return board.every((row) => row.every((cell) => cell.value !== null));
+};

@@ -19,15 +19,22 @@ export const GameStatus = () => {
   };
 
   return (
-    <div className="text-center mb-4">
-      {gameStatus === "won" ? (
-        <div className="text-2xl font-bold text-green-600">
+    <div className="flex flex-col items-center gap-4 p-6 bg-white rounded-lg shadow-md">
+      <p>Game {gameStatus}</p>
+      {gameStatus === "finished" && winner ? (
+        <p className="text-lg font-bold text-green-600">
           Player {winner} wins!
-        </div>
+        </p>
+      ) : gameStatus === "finished" && !winner ? (
+        <p className="text-lg font-bold">It's a draw!</p>
       ) : (
-        <div className="text-xl font-bold">Current Player: {currentPlayer}</div>
+        <p className="text-lg font-bold">Current Player: {currentPlayer}</p>
       )}
-      <Button variant={"secondary"} onClick={handleCreateNewGame}>
+      <Button
+        variant="secondary"
+        onClick={handleCreateNewGame}
+        className="w-48"
+      >
         Create New Game
       </Button>
     </div>

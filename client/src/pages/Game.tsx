@@ -13,9 +13,11 @@ export function Game() {
   }
 
   return (
-    <div className="flex flex-row gap-2 justify-center h-screen">
-      <GameStatus />
-      <GameBoard />
+    <div className=" items-center justify-center min-h-screen p-4">
+      <div className="w-full max-w-2xl space-y-8">
+        <GameStatus />
+        <GameBoard />
+      </div>
     </div>
   );
 }

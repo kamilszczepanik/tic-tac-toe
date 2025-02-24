@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
-import { checkWinner } from "../utils/helpers";
+import { checkWinner, everyCellFilled } from "../utils/helpers";
 
 export interface Cell {
   value: "O" | "X" | null;
@@ -8,7 +8,7 @@ export interface Cell {
 
 export interface GameState {
   board: Cell[][];
-  gameStatus: "idle" | "playing" | "won" | "lost";
+  gameStatus: "idle" | "in_progress" | "finished";
   boardSize: {
     rows: number;
     cols: number;
@@ -54,7 +54,7 @@ const gameSlice = createSlice({
         );
       state.boardSize = { rows, cols };
       state.requiredInRow = requiredInRow;
-      state.gameStatus = "playing";
+      state.gameStatus = "in_progress";
     },
 
     setGameStatus: (state, action: PayloadAction<GameState["gameStatus"]>) => {
@@ -78,15 +78,17 @@ const gameSlice = createSlice({
 
       if (
         state.board[row][col].value === null &&
-        state.gameStatus === "playing"
+        state.gameStatus === "in_progress"
       ) {
         state.board[row][col].value = state.currentPlayer;
 
         const winner = checkWinner(state.board);
         if (winner) {
-          console.log("winner", winner);
           state.winner = winner;
-          state.gameStatus = "won";
+          state.gameStatus = "finished";
+          return;
+        } else if (!winner && everyCellFilled(state.board)) {
+          state.gameStatus = "finished";
           return;
         }
 
