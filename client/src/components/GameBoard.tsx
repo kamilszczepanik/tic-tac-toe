@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   selectBoard,
   selectBoardSize,
-  selectCurrentPlayer,
+  selectGameStatus,
   play,
 } from "../store/gameSlice";
 import { Button } from "./ui/button";
@@ -11,7 +11,7 @@ export const GameBoard = () => {
   const dispatch = useAppDispatch();
   const board = useAppSelector(selectBoard);
   const boardSize = useAppSelector(selectBoardSize);
-  const currentPlayer = useAppSelector(selectCurrentPlayer);
+  const gameStatus = useAppSelector(selectGameStatus);
 
   const handleCellClick = (row: number, col: number) => {
     dispatch(play({ row, col }));
@@ -19,9 +19,6 @@ export const GameBoard = () => {
 
   return (
     <div>
-      <div className="text-xl font-bold mb-4">
-        Current Player: {currentPlayer}
-      </div>
       <div
         className="grid gap-2"
         style={{
@@ -35,7 +32,7 @@ export const GameBoard = () => {
               key={`${rowIndex}-${colIndex}`}
               className="w-16 h-16 text-2xl font-bold"
               onClick={() => handleCellClick(rowIndex, colIndex)}
-              disabled={cell.value !== null}
+              disabled={cell.value !== null || gameStatus === "won"}
             >
               {cell.value}
             </Button>

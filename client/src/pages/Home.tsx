@@ -10,6 +10,7 @@ export function Home() {
   const [formData, setFormData] = useState({
     rows: 3,
     cols: 3,
+    requiredInRow: 3,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -18,6 +19,7 @@ export function Home() {
       initializeBoard({
         rows: formData.rows,
         cols: formData.cols,
+        requiredInRow: formData.requiredInRow,
       })
     );
     navigate("/game");
@@ -72,6 +74,25 @@ export function Home() {
             min="3"
             max="10"
             value={formData.cols}
+            onChange={handleInputChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label
+            htmlFor="requiredInRow"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Required in Row:
+          </label>
+          <input
+            type="number"
+            id="requiredInRow"
+            name="requiredInRow"
+            min="3"
+            max="10"
+            value={formData.requiredInRow}
             onChange={handleInputChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
