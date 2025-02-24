@@ -26,6 +26,7 @@ export interface GameState {
     currentIndex: number;
   };
   isReplaying: boolean;
+  winningSquares: { row: number; col: number }[];
 }
 
 const initialState: GameState = {
@@ -43,6 +44,7 @@ const initialState: GameState = {
     currentIndex: -1,
   },
   isReplaying: false,
+  winningSquares: [],
 };
 
 type GameStateHistory = {
@@ -121,15 +123,17 @@ const gameSlice = createSlice({
       ) {
         state.board[row][col].value = state.currentPlayer;
 
-        const winner = checkWinner(state.board, state.requiredInRow);
+        const result = checkWinner(state.board, state.requiredInRow);
         const newGameStatus =
-          winner || everyCellFilled(state.board) ? "finished" : "in_progress";
+          result.winner || everyCellFilled(state.board)
+            ? "finished"
+            : "in_progress";
 
         const newGameState: GameStateHistory = {
           board: JSON.parse(JSON.stringify(state.board)),
           gameStatus: newGameStatus as GameState["gameStatus"],
           currentPlayer: state.currentPlayer === "O" ? "X" : "O",
-          winner: winner || null,
+          winner: result.winner || null,
         };
 
         state.history.states = [
@@ -139,8 +143,9 @@ const gameSlice = createSlice({
         state.history.currentIndex++;
 
         state.gameStatus = newGameStatus;
-        state.winner = winner || null;
+        state.winner = result.winner || null;
         state.currentPlayer = newGameState.currentPlayer;
+        state.winningSquares = result.winningSquares;
       }
     },
 
@@ -223,3 +228,5 @@ export const selectCanRedo = (state: RootState) =>
   state.game.history.currentIndex < state.game.history.states.length - 1;
 export const selectIsReplaying = (state: RootState) => state.game.isReplaying;
 export const selectHistory = (state: RootState) => state.game.history;
+export const selectWinningSquares = (state: RootState) =>
+  state.game.winningSquares;

@@ -7,10 +7,15 @@ const checkLine = (line: Cell[]): "O" | "X" | null => {
   return line.every((cell) => cell.value === firstValue) ? firstValue : null;
 };
 
+export interface WinResult {
+  winner: "O" | "X" | null;
+  winningSquares: { row: number; col: number }[];
+}
+
 export const checkWinner = (
   board: Cell[][],
   requiredInRow: number
-): "O" | "X" | null => {
+): WinResult => {
   const rows = board.length;
   const cols = board[0].length;
 
@@ -18,7 +23,15 @@ export const checkWinner = (
     for (let j = 0; j <= cols - requiredInRow; j++) {
       const line = board[i].slice(j, j + requiredInRow);
       const winner = checkLine(line);
-      if (winner) return winner;
+      if (winner) {
+        return {
+          winner,
+          winningSquares: Array.from({ length: requiredInRow }, (_, k) => ({
+            row: i,
+            col: j + k,
+          })),
+        };
+      }
     }
   }
 
@@ -29,7 +42,15 @@ export const checkWinner = (
         (_, k) => board[i + k][j]
       );
       const winner = checkLine(line);
-      if (winner) return winner;
+      if (winner) {
+        return {
+          winner,
+          winningSquares: Array.from({ length: requiredInRow }, (_, k) => ({
+            row: i + k,
+            col: j,
+          })),
+        };
+      }
     }
   }
 
@@ -40,7 +61,15 @@ export const checkWinner = (
         (_, k) => board[i + k][j + k]
       );
       const winner = checkLine(line);
-      if (winner) return winner;
+      if (winner) {
+        return {
+          winner,
+          winningSquares: Array.from({ length: requiredInRow }, (_, k) => ({
+            row: i + k,
+            col: j + k,
+          })),
+        };
+      }
     }
   }
 
@@ -51,11 +80,19 @@ export const checkWinner = (
         (_, k) => board[i + k][j - k]
       );
       const winner = checkLine(line);
-      if (winner) return winner;
+      if (winner) {
+        return {
+          winner,
+          winningSquares: Array.from({ length: requiredInRow }, (_, k) => ({
+            row: i + k,
+            col: j - k,
+          })),
+        };
+      }
     }
   }
 
-  return null;
+  return { winner: null, winningSquares: [] };
 };
 
 export const everyCellFilled = (board: Cell[][]): boolean => {

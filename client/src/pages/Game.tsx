@@ -7,7 +7,6 @@ import { GameBoard } from "../components/GameBoard";
 export function Game() {
   const gameStatus = useAppSelector(selectGameStatus);
 
-  console.log(gameStatus);
   if (gameStatus === "idle") {
     return <Navigate to="/" />;
   }

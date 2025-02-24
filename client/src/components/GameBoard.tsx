@@ -3,8 +3,10 @@ import {
   selectBoard,
   selectBoardSize,
   selectGameStatus,
+  selectWinningSquares,
   play,
   selectIsReplaying,
+  selectWinner,
 } from "../store/gameSlice";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
@@ -12,9 +14,11 @@ import { useEffect, useState } from "react";
 export const GameBoard = () => {
   const dispatch = useAppDispatch();
   const board = useAppSelector(selectBoard);
+  const winner = useAppSelector(selectWinner);
   const boardSize = useAppSelector(selectBoardSize);
   const gameStatus = useAppSelector(selectGameStatus);
   const isReplaying = useAppSelector(selectIsReplaying);
+  const winningSquares = useAppSelector(selectWinningSquares);
   const [lastMove, setLastMove] = useState<{ row: number; col: number } | null>(
     null
   );
@@ -34,6 +38,12 @@ export const GameBoard = () => {
     }
   }, [lastMove]);
 
+  const isWinningSquare = (row: number, col: number) => {
+    return winningSquares.some(
+      (square) => square.row === row && square.col === col
+    );
+  };
+
   return (
     <div className="flex justify-center">
       <div
@@ -44,23 +54,27 @@ export const GameBoard = () => {
         }}
       >
         {board.map((row, rowIndex) =>
-          row.map((cell, colIndex) => (
-            <Button
-              variant="outline"
-              key={`${rowIndex}-${colIndex}`}
-              className={`aspect-square w-full text-2xl font-bold ${
-                lastMove?.row === rowIndex && lastMove?.col === colIndex
-                  ? "cell-move"
-                  : ""
-              }`}
-              onClick={() => handleCellClick(rowIndex, colIndex)}
-              disabled={
-                cell.value !== null || gameStatus === "finished" || isReplaying
-              }
-            >
-              {cell.value}
-            </Button>
-          ))
+          row.map((cell, colIndex) => {
+            const isWinning = winner && isWinningSquare(rowIndex, colIndex);
+            console.log(isWinning);
+            return (
+              <Button
+                variant="outline"
+                key={`${rowIndex}-${colIndex}`}
+                className={`aspect-square w-full text-2xl font-bold ${
+                  isWinning ? "!bg-green-500" : ""
+                }`}
+                onClick={() => handleCellClick(rowIndex, colIndex)}
+                disabled={
+                  cell.value !== null ||
+                  gameStatus === "finished" ||
+                  isReplaying
+                }
+              >
+                {cell.value}
+              </Button>
+            );
+          })
         )}
       </div>
     </div>

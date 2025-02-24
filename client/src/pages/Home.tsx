@@ -32,7 +32,6 @@ export function Home() {
     setFormData((prev) => {
       const updates = { ...prev, [name]: newValue };
 
-      // If rows or columns are updated, adjust requiredInRow if needed
       if (name === "rows" || name === "cols") {
         const maxAllowed = Math.max(updates.rows, updates.cols);
         if (updates.requiredInRow > maxAllowed) {
@@ -40,7 +39,6 @@ export function Home() {
         }
       }
 
-      // If requiredInRow is updated, ensure it doesn't exceed max allowed
       if (name === "requiredInRow") {
         const maxAllowed = Math.max(prev.rows, prev.cols);
         updates.requiredInRow = Math.max(newValue, maxAllowed);

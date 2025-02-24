@@ -58,7 +58,7 @@ export const GameStatus = () => {
     <div className="flex flex-col items-center gap-4 p-6 bg-white rounded-lg shadow-md">
       <p>Game {gameStatus}</p>
       {gameStatus === "finished" && winner ? (
-        <p className="text-lg font-bold text-green-600">
+        <p className="text-lg font-bold text-green-600 cell-move">
           Player {winner} wins!
         </p>
       ) : gameStatus === "finished" && !winner ? (
