@@ -6,16 +6,30 @@ import {
   play,
 } from "../store/gameSlice";
 import { Button } from "./ui/button";
+import { useEffect, useState } from "react";
 
 export const GameBoard = () => {
   const dispatch = useAppDispatch();
   const board = useAppSelector(selectBoard);
   const boardSize = useAppSelector(selectBoardSize);
   const gameStatus = useAppSelector(selectGameStatus);
+  const [lastMove, setLastMove] = useState<{ row: number; col: number } | null>(
+    null
+  );
 
   const handleCellClick = (row: number, col: number) => {
     dispatch(play({ row, col }));
+    setLastMove({ row, col });
   };
+
+  useEffect(() => {
+    if (lastMove) {
+      const timer = setTimeout(() => {
+        setLastMove(null);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [lastMove]);
 
   return (
     <div className="flex justify-center">
@@ -31,7 +45,11 @@ export const GameBoard = () => {
             <Button
               variant="outline"
               key={`${rowIndex}-${colIndex}`}
-              className="aspect-square w-full text-2xl font-bold"
+              className={`aspect-square w-full text-2xl font-bold ${
+                lastMove?.row === rowIndex && lastMove?.col === colIndex
+                  ? "cell-move"
+                  : ""
+              }`}
               onClick={() => handleCellClick(rowIndex, colIndex)}
               disabled={cell.value !== null || gameStatus === "finished"}
             >

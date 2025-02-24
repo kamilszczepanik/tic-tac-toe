@@ -19,3 +19,18 @@
   --color-success: #c0e3e5;
   --color-warning: #fdc936;
 }
+
+.cell-move {
+  animation: moveAnimation 0.3s ease-out;
+}
+
+@keyframes moveAnimation {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
