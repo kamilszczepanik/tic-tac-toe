@@ -17,7 +17,12 @@ export interface GameState {
   winner: "O" | "X" | null;
   requiredInRow: number;
   history: {
-    boards: Cell[][][];
+    states: {
+      board: Cell[][];
+      gameStatus: GameState["gameStatus"];
+      currentPlayer: "O" | "X";
+      winner: "O" | "X" | null;
+    }[];
     currentIndex: number;
   };
 }
@@ -33,9 +38,16 @@ const initialState: GameState = {
   winner: null,
   requiredInRow: 3,
   history: {
-    boards: [],
+    states: [],
     currentIndex: -1,
   },
+};
+
+type GameStateHistory = {
+  board: Cell[][];
+  gameStatus: GameState["gameStatus"];
+  currentPlayer: "O" | "X";
+  winner: "O" | "X" | null;
 };
 
 const gameSlice = createSlice({
@@ -60,12 +72,20 @@ const gameSlice = createSlice({
               value: null,
             }))
         );
+
+      const initialGameState = {
+        board: newBoard,
+        gameStatus: "in_progress" as const,
+        currentPlayer: "X" as const,
+        winner: null,
+      };
+
       state.board = newBoard;
       state.boardSize = { rows, cols };
       state.requiredInRow = requiredInRow;
       state.gameStatus = "in_progress";
       state.history = {
-        boards: [JSON.parse(JSON.stringify(newBoard))],
+        states: [initialGameState],
         currentIndex: 0,
       };
     },
@@ -79,7 +99,7 @@ const gameSlice = createSlice({
       state.gameStatus = "idle";
       state.boardSize = { rows: 3, cols: 3 };
       state.history = {
-        boards: [],
+        states: [],
         currentIndex: -1,
       };
     },
@@ -99,45 +119,50 @@ const gameSlice = createSlice({
       ) {
         state.board[row][col].value = state.currentPlayer;
 
-        state.history.boards = [
-          ...state.history.boards.slice(0, state.history.currentIndex + 1),
-          JSON.parse(JSON.stringify(state.board)),
+        const winner = checkWinner(state.board, state.requiredInRow);
+        const newGameStatus =
+          winner || everyCellFilled(state.board) ? "finished" : "in_progress";
+
+        const newGameState: GameStateHistory = {
+          board: JSON.parse(JSON.stringify(state.board)),
+          gameStatus: newGameStatus as GameState["gameStatus"],
+          currentPlayer: state.currentPlayer === "O" ? "X" : "O",
+          winner: winner || null,
+        };
+
+        state.history.states = [
+          ...state.history.states.slice(0, state.history.currentIndex + 1),
+          newGameState,
         ];
         state.history.currentIndex++;
 
-        const winner = checkWinner(state.board, state.requiredInRow);
-        if (winner) {
-          state.winner = winner;
-          state.gameStatus = "finished";
-          return;
-        } else if (!winner && everyCellFilled(state.board)) {
-          state.gameStatus = "finished";
-          return;
-        }
-
-        state.currentPlayer = state.currentPlayer === "O" ? "X" : "O";
+        state.gameStatus = newGameStatus;
+        state.winner = winner || null;
+        state.currentPlayer = newGameState.currentPlayer;
       }
     },
 
     undo: (state) => {
       if (state.history.currentIndex > 0) {
         state.history.currentIndex--;
-        state.board = JSON.parse(
-          JSON.stringify(state.history.boards[state.history.currentIndex])
-        );
-        state.currentPlayer = state.currentPlayer === "O" ? "X" : "O";
-        state.gameStatus = "in_progress";
-        state.winner = null;
+        const previousState = state.history.states[state.history.currentIndex];
+
+        state.board = JSON.parse(JSON.stringify(previousState.board));
+        state.gameStatus = previousState.gameStatus;
+        state.currentPlayer = previousState.currentPlayer;
+        state.winner = previousState.winner;
       }
     },
 
     redo: (state) => {
-      if (state.history.currentIndex < state.history.boards.length - 1) {
+      if (state.history.currentIndex < state.history.states.length - 1) {
         state.history.currentIndex++;
-        state.board = JSON.parse(
-          JSON.stringify(state.history.boards[state.history.currentIndex])
-        );
-        state.currentPlayer = state.currentPlayer === "O" ? "X" : "O";
+        const nextState = state.history.states[state.history.currentIndex];
+
+        state.board = JSON.parse(JSON.stringify(nextState.board));
+        state.gameStatus = nextState.gameStatus;
+        state.currentPlayer = nextState.currentPlayer;
+        state.winner = nextState.winner;
       }
     },
   },
@@ -157,4 +182,4 @@ export const selectWinner = (state: RootState) => state.game.winner;
 export const selectCanUndo = (state: RootState) =>
   state.game.history.currentIndex > 0;
 export const selectCanRedo = (state: RootState) =>
-  state.game.history.currentIndex < state.game.history.boards.length - 1;
+  state.game.history.currentIndex < state.game.history.states.length - 1;
