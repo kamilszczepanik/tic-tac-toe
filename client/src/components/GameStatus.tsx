@@ -1,10 +1,13 @@
-import { useAppDispatch } from "../store/hooks";
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   selectGameStatus,
   selectWinner,
   selectCurrentPlayer,
+  selectCanUndo,
+  selectCanRedo,
   clearBoard,
+  undo,
+  redo,
 } from "../store/gameSlice";
 import { Button } from "./ui/button";
 
@@ -13,10 +16,8 @@ export const GameStatus = () => {
   const gameStatus = useAppSelector(selectGameStatus);
   const winner = useAppSelector(selectWinner);
   const currentPlayer = useAppSelector(selectCurrentPlayer);
-
-  const handleCreateNewGame = () => {
-    dispatch(clearBoard());
-  };
+  const canUndo = useAppSelector(selectCanUndo);
+  const canRedo = useAppSelector(selectCanRedo);
 
   return (
     <div className="flex flex-col items-center gap-4 p-6 bg-white rounded-lg shadow-md">
@@ -30,7 +31,29 @@ export const GameStatus = () => {
       ) : (
         <p className="text-lg font-bold">Current Player: {currentPlayer}</p>
       )}
-      <Button variant="outline" onClick={handleCreateNewGame} className="w-48">
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          onClick={() => dispatch(undo())}
+          disabled={!canUndo}
+          className="w-24"
+        >
+          Undo
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => dispatch(redo())}
+          disabled={!canRedo}
+          className="w-24"
+        >
+          Redo
+        </Button>
+      </div>
+      <Button
+        variant="outline"
+        onClick={() => dispatch(clearBoard())}
+        className="w-48"
+      >
         Create New Game
       </Button>
     </div>
