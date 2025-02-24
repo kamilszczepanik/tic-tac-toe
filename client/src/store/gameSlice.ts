@@ -1,25 +1,65 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 
-interface GameState {
-  gameId?: string;
+export interface Cell {
+  value: "cercle" | "cross" | null;
+}
+
+export interface GameState {
+  board: Cell[][];
+  gameStatus: "idle" | "playing" | "won" | "lost";
+  boardSize: {
+    rows: number;
+    cols: number;
+  };
 }
 
 const initialState: GameState = {
-  gameId: "new id",
+  board: [],
+  gameStatus: "idle",
+  boardSize: {
+    rows: 3,
+    cols: 3,
+  },
 };
 
-export const gameSlice = createSlice({
+const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    setGameId(state, action: PayloadAction<string | undefined>) {
-      state.gameId = action.payload;
+    initializeBoard: (
+      state,
+      action: PayloadAction<{
+        rows: number;
+        cols: number;
+      }>
+    ) => {
+      const { rows, cols } = action.payload;
+      state.board = Array(rows)
+        .fill(null)
+        .map(() =>
+          Array(cols)
+            .fill(null)
+            .map(() => ({
+              value: null,
+              isRevealed: false,
+              isFlagged: false,
+            }))
+        );
+      state.boardSize = { rows, cols };
+      state.gameStatus = "playing";
+    },
+
+    setGameStatus: (state, action: PayloadAction<GameState["gameStatus"]>) => {
+      state.gameStatus = action.payload;
     },
   },
 });
 
-export const { setGameId } = gameSlice.actions;
+export const { initializeBoard, setGameStatus } = gameSlice.actions;
+
 export default gameSlice.reducer;
 
-export const selectGameId = (state: RootState) => state.game.gameId;
+export const selectBoard = (state: RootState) => state.game.board;
+export const selectGameStatus = (state: RootState) => state.game.gameStatus;
+export const selectBoardSize = (state: RootState) => state.game.boardSize;

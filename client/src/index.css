@@ -68,3 +68,12 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@theme {
+  --color-*: initial;
+  --color-white: #fff;
+  --color-custom-black: #322625;
+  --color-custom-grey: #ebebeb;
+  --color-custom-blue: #c0e3e5;
+  --color-custom-yellow: #fdc936;
+}
