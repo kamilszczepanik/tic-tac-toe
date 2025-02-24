@@ -7,27 +7,53 @@ const checkLine = (line: Cell[]): "O" | "X" | null => {
   return line.every((cell) => cell.value === firstValue) ? firstValue : null;
 };
 
-export const checkWinner = (board: Cell[][]): "O" | "X" | null => {
-  for (let i = 0; i < 3; i++) {
-    const row = board[i];
-    const rowWinner = checkLine([row[0], row[1], row[2]]);
-    if (rowWinner) return rowWinner;
+export const checkWinner = (
+  board: Cell[][],
+  requiredInRow: number
+): "O" | "X" | null => {
+  const rows = board.length;
+  const cols = board[0].length;
+
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j <= cols - requiredInRow; j++) {
+      const line = board[i].slice(j, j + requiredInRow);
+      const winner = checkLine(line);
+      if (winner) return winner;
+    }
   }
 
-  for (let j = 0; j < 3; j++) {
-    const column = [board[0][j], board[1][j], board[2][j]];
-    const columnWinner = checkLine(column);
-    if (columnWinner) return columnWinner;
+  for (let i = 0; i <= rows - requiredInRow; i++) {
+    for (let j = 0; j < cols; j++) {
+      const line = Array.from(
+        { length: requiredInRow },
+        (_, k) => board[i + k][j]
+      );
+      const winner = checkLine(line);
+      if (winner) return winner;
+    }
   }
 
-  const diagonal1 = [board[0][0], board[1][1], board[2][2]];
-  const diagonal1Winner = checkLine(diagonal1);
-  if (diagonal1Winner) return diagonal1Winner;
+  for (let i = 0; i <= rows - requiredInRow; i++) {
+    for (let j = 0; j <= cols - requiredInRow; j++) {
+      const line = Array.from(
+        { length: requiredInRow },
+        (_, k) => board[i + k][j + k]
+      );
+      const winner = checkLine(line);
+      if (winner) return winner;
+    }
+  }
 
-  // Check diagonal from top-right to bottom-left
-  const diagonal2 = [board[2][0], board[1][1], board[0][2]];
-  const diagonal2Winner = checkLine(diagonal2);
-  if (diagonal2Winner) return diagonal2Winner;
+  for (let i = 0; i <= rows - requiredInRow; i++) {
+    for (let j = requiredInRow - 1; j < cols; j++) {
+      const line = Array.from(
+        { length: requiredInRow },
+        (_, k) => board[i + k][j - k]
+      );
+      const winner = checkLine(line);
+      if (winner) return winner;
+    }
+  }
 
   return null;
 };

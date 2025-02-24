@@ -30,11 +30,7 @@ export const GameStatus = () => {
       ) : (
         <p className="text-lg font-bold">Current Player: {currentPlayer}</p>
       )}
-      <Button
-        variant="secondary"
-        onClick={handleCreateNewGame}
-        className="w-48"
-      >
+      <Button variant="outline" onClick={handleCreateNewGame} className="w-48">
         Create New Game
       </Button>
     </div>

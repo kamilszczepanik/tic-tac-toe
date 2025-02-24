@@ -82,7 +82,7 @@ const gameSlice = createSlice({
       ) {
         state.board[row][col].value = state.currentPlayer;
 
-        const winner = checkWinner(state.board);
+        const winner = checkWinner(state.board, state.requiredInRow);
         if (winner) {
           state.winner = winner;
           state.gameStatus = "finished";
